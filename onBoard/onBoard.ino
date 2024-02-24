@@ -46,9 +46,9 @@ Motor motorA(in1, in2, PWMA, C1A, C2A, conversionRatio);
 Motor motorB(in3, in4, PWMB, C1B, C2B, conversionRatio);
 
 // Debugging / Modes
-const bool print = true;
-const bool logIMU = true;
-const bool serialConnection = false;
+const bool print = false;
+const bool logIMU = false;
+const bool serialConnection = true;
 
 // Complimentary Filter
 float a[3], r[3], m[3];
@@ -84,12 +84,10 @@ void controlLoop() {
 
   // Read serial
   if(serialConnection) {
-    /*
-    if (Serial1.available()) {
+    if (Serial.available()) {
       readIntArray(target, 2);
-      Serial1.readStringUntil('\n');
+      Serial.readStringUntil('\n');
     }
-    */
   }
   else {
     target[0] = maxRPM * round(sin(0.3 * micros() / 1e6));
@@ -102,13 +100,11 @@ void controlLoop() {
 
   v[0] = controlMotor(target[0], &motorA);
   v[1] = controlMotor(target[1], &motorB);
-  //motorA.drive(200);
-  //motorB.drive(200);
 
   if(serialConnection) {
     printArray(orientation,3);
     printArray(v,2);
-    //Serial1.println();
+    Serial.println();
   }
 
   // Print to serial for debugging
@@ -193,13 +189,13 @@ void motorBInterrupt() {
 }
 
 void readIntArray(int *arr, int length) {
-  for(int i = 0; i<length; i++);
-    //arr[i] = Serial1.readStringUntil(',').toInt();
+  for(int i = 0; i<length; i++)
+    arr[i] = Serial.readStringUntil(',').toInt();
 }
 
 void printArray(float *arr, int length) {
-  for(int i=0; i<length; i++);
-    //Serial1.print(String(arr[i]) + ',');
+  for(int i=0; i<length; i++)
+    Serial.print(String(arr[i]) + ',');
 }
 
 void IMUsetup() {
